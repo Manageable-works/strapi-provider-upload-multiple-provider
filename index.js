@@ -4,8 +4,8 @@ const streamToArray = require('stream-to-array');
 
 const baseProvider = {
   extend (obj) {
-    strapi.log.info("DEBUG - extend");
-    strapi.log.info(obj)
+    // strapi.log.info("DEBUG - extend");
+    // strapi.log.info(obj)
     Object.assign(this, obj)
   },
   upload () {
@@ -39,9 +39,11 @@ const getProviderData = (file, options) => {
     throw new Error(msg)
   }
 
+  
   let providerKey
   try {
     providerKey = options.selectProvider(file)
+    strapi.log.info(`DEBUG - selected provider is ${providerKey}`);
   } catch (err) {
     const msg = `The function selectProvider generated error`
     strapi.log.error(msg)
@@ -64,9 +66,11 @@ const getProviderData = (file, options) => {
 
   let providerInstance
   try {
+    strapi.log.info(`DEBUG - initialising ${p.providerKey}`);
     providerInstance = require(`${p.provider}`).init(
       p.options
     )
+    strapi.log.info(`DEBUG - provider instace ${JSON.stringify(providerInstance)}`);
   } catch (err) {
     const msg = `The provider package isn't installed. Please run \`npm install ${p.provider}\``
     strapi.log.error(msg)
@@ -113,8 +117,10 @@ module.exports = {
             file,
             options
           )
+          strapi.log.info("DEBUG - calling providerFunctions upload");
           return providerFunctions.upload(file)
         } catch (err) {
+          strapi.log.info("DEBUG - error occurred");
           return null
         }
       },
@@ -124,8 +130,10 @@ module.exports = {
             file,
             options
           )
+          strapi.log.info("DEBUG - calling providerFunctions uploadStream");
           return providerFunctions.uploadStream(file)
         } catch (err) {
+          strapi.log.info("DEBUG - error occurred");
           return null
         }
       },
