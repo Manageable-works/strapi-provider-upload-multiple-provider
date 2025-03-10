@@ -77,12 +77,12 @@ const getProviderData = (file, options) => {
     ...providerInstance,
     upload: wrapFunctionForErrors(file => {
       strapi.log.info("DEBUG - upload");
-      strapi.log.info(file);
+      strapi.log.info(JSON.stringify(providerInstance));
       return providerInstance.upload(file)
     }),
     uploadStream: wrapFunctionForErrors(async (file) => {
       strapi.log.info("DEBUG - uploadStream");
-      strapi.log.info(file);
+      strapi.log.info(JSON.stringify(providerInstance));
       if (providerInstance.uploadStream) {
         return providerInstance.uploadStream(file)
       } else {
