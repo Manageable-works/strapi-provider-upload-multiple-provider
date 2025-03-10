@@ -66,11 +66,11 @@ const getProviderData = (file, options) => {
 
   let providerInstance
   try {
-    strapi.log.info(`DEBUG - initialising ${p.providerKey}`);
+    strapi.log.info(`DEBUG - initialising ${p.provider}`);
     providerInstance = require(`${p.provider}`).init(
       p.options
     )
-    strapi.log.info(`DEBUG - provider instace ${JSON.stringify(providerInstance)}`);
+    strapi.log.info(`DEBUG - provider instance ${JSON.stringify(providerInstance)}`);
   } catch (err) {
     const msg = `The provider package isn't installed. Please run \`npm install ${p.provider}\``
     strapi.log.error(msg)
@@ -86,7 +86,8 @@ const getProviderData = (file, options) => {
     }),
     uploadStream: wrapFunctionForErrors(async (file) => {
       strapi.log.info("DEBUG - uploadStream");
-      strapi.log.info(JSON.stringify(providerInstance));
+      strapi.log.info("DEBUG - uploadStream", providerInstance);
+      // strapi.log.info(JSON.stringify(providerInstance));
       if (providerInstance.uploadStream) {
         return providerInstance.uploadStream(file)
       } else {
