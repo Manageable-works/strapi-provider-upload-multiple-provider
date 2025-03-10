@@ -31,8 +31,8 @@ const wrapFunctionForErrors = fn => async (...args) => {
 
 const getProviderData = (file, options) => {
   strapi.log.info("DEBUG - getProviderData");
-  strapi.log.info(file);
-  strapi.log.info(options);
+  // strapi.log.info(file);
+  strapi.log.info(JSON.stringify(options));
   if (!options.selectProvider || typeof options.selectProvider !== 'function') {
     const msg = `config must define a selectProvider function`
     strapi.log.error(msg)
