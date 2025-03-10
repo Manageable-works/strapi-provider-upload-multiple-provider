@@ -4,8 +4,8 @@ const streamToArray = require('stream-to-array');
 
 const baseProvider = {
   extend (obj) {
-    console.log("DEBUG - extend");
-    console.log(obj)
+    strapi.log.info("DEBUG - extend");
+    strapi.log.info(obj)
     Object.assign(this, obj)
   },
   upload () {
@@ -30,9 +30,9 @@ const wrapFunctionForErrors = fn => async (...args) => {
 }
 
 const getProviderData = (file, options) => {
-  console.log("DEBUG - getProviderData");
-  console.log(file);
-  console.log(options);
+  strapi.log.info("DEBUG - getProviderData");
+  strapi.log.info(file);
+  strapi.log.info(options);
   if (!options.selectProvider || typeof options.selectProvider !== 'function') {
     const msg = `config must define a selectProvider function`
     strapi.log.error(msg)
@@ -76,13 +76,13 @@ const getProviderData = (file, options) => {
   const providerFunctions = Object.assign(Object.create(baseProvider), {
     ...providerInstance,
     upload: wrapFunctionForErrors(file => {
-      console.log("DEBUG - upload");
-      console.log(file);
+      strapi.log.info("DEBUG - upload");
+      strapi.log.info(file);
       return providerInstance.upload(file)
     }),
     uploadStream: wrapFunctionForErrors(async (file) => {
-      console.log("DEBUG - uploadStream");
-      console.log(file);
+      strapi.log.info("DEBUG - uploadStream");
+      strapi.log.info(file);
       if (providerInstance.uploadStream) {
         return providerInstance.uploadStream(file)
       } else {
