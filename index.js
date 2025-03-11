@@ -110,8 +110,8 @@ const getProviderData = (file, options) => {
     isPrivate: wrapFunctionForErrors(async () => {
       return providerInstance.isPrivate();
     }),
-    getSignedUrl: wrapFunctionForErrors(async () => {
-      return providerInstance.getSignedUrl();
+    getSignedUrl: wrapFunctionForErrors(async (file) => {
+      return providerInstance.getSignedUrl(file);
     }),
   });
 
@@ -178,7 +178,7 @@ module.exports = {
             options
           );
           strapi.log.info("DEBUG - calling providerFunctions getSignedUrl");
-          return providerFunctions.getSignedUrl();
+          return providerFunctions.getSignedUrl(file);
         } catch (err) {
           return null;
         }
