@@ -158,17 +158,18 @@ module.exports = {
           return null;
         }
       },
-      isPrivate(file) {
-        try {
-          const { providerFunctions, providerOptions } = getProviderData(
-            file,
-            options
-          );
-          strapi.log.info("DEBUG - calling providerFunctions isPrivate");
-          return providerFunctions.isPrivate();
-        } catch (err) {
-          return null;
-        }
+      isPrivate() {
+        // try {
+        //   const { providerFunctions, providerOptions } = getProviderData(
+        //     file,
+        //     options
+        //   );
+        //   strapi.log.info("DEBUG - calling providerFunctions isPrivate");
+        //   return providerFunctions.isPrivate();
+        // } catch (err) {
+        //   return null;
+        // }
+        return true;
       },
       getSignedUrl(file) {
         try {
