@@ -111,7 +111,11 @@ const getProviderData = (file, options) => {
       return providerInstance.isPrivate();
     }),
     getSignedUrl: wrapFunctionForErrors(async (file) => {
-      return providerInstance.getSignedUrl(file);
+      if (providerInstance.isPrivate()) {
+        return providerInstance.getSignedUrl(file);
+      } else {
+        return file.url;
+      }
     }),
   });
 
