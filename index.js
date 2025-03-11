@@ -4,8 +4,6 @@ const streamToArray = require("stream-to-array");
 
 const baseProvider = {
   extend(obj) {
-    // strapi.log.info("DEBUG - extend");
-    // strapi.log.info(obj)
     Object.assign(this, obj);
   },
   upload() {
@@ -16,25 +14,18 @@ const baseProvider = {
   },
 };
 
-// removed reliance on strapi v3 api
-// const { convertToStrapiError } = require('../strapi-plugin-upload/errors')
-
 const wrapFunctionForErrors =
   (fn) =>
   async (...args) => {
     try {
       return await fn(...args);
     } catch (err) {
-      // throw convertToStrapiError(err)
       strapi.log.error(err);
       throw new Error(err);
     }
   };
 
 const getProviderData = (file, options) => {
-  strapi.log.info("DEBUG - getProviderData");
-  // strapi.log.info(file);
-  strapi.log.info(JSON.stringify(options));
   if (!options.selectProvider || typeof options.selectProvider !== "function") {
     const msg = `config must define a selectProvider function`;
     strapi.log.error(msg);
@@ -44,7 +35,6 @@ const getProviderData = (file, options) => {
   let providerKey;
   try {
     providerKey = options.selectProvider(file);
-    strapi.log.info(`DEBUG - selected provider is ${providerKey}`);
   } catch (err) {
     const msg = `The function selectProvider generated error`;
     strapi.log.error(msg);
@@ -67,11 +57,7 @@ const getProviderData = (file, options) => {
 
   let providerInstance;
   try {
-    strapi.log.info(`DEBUG - initialising ${p.provider}`);
     providerInstance = require(`${p.provider}`).init(p.options);
-    strapi.log.info(
-      `DEBUG - provider instance ${JSON.stringify(providerInstance)}`
-    );
   } catch (err) {
     const msg = `The provider package isn't installed. Please run \`npm install ${p.provider}\``;
     strapi.log.error(msg);
@@ -81,14 +67,9 @@ const getProviderData = (file, options) => {
   const providerFunctions = Object.assign(Object.create(baseProvider), {
     ...providerInstance,
     upload: wrapFunctionForErrors((file) => {
-      strapi.log.info("DEBUG - upload");
-      strapi.log.info(JSON.stringify(providerInstance));
       return providerInstance.upload(file);
     }),
     uploadStream: wrapFunctionForErrors(async (file) => {
-      strapi.log.info("DEBUG - uploadStream");
-      strapi.log.info("DEBUG - uploadStream", providerInstance);
-      // strapi.log.info(JSON.stringify(providerInstance));
       if (providerInstance.uploadStream) {
         return providerInstance.uploadStream(file);
       } else {
@@ -111,6 +92,8 @@ const getProviderData = (file, options) => {
       return providerInstance.isPrivate();
     }),
     getSignedUrl: wrapFunctionForErrors(async (file) => {
+      // signed urls will only be provided if the underlying provider is set to private
+      // otherwise the unsigned file is returned
       if (providerInstance.isPrivate && providerInstance.isPrivate()) {
         return providerInstance.getSignedUrl(file);
       } else {
@@ -131,10 +114,8 @@ module.exports = {
             file,
             options
           );
-          strapi.log.info("DEBUG - calling providerFunctions upload");
           return providerFunctions.upload(file);
         } catch (err) {
-          strapi.log.info("DEBUG - error occurred");
           return null;
         }
       },
@@ -144,10 +125,8 @@ module.exports = {
             file,
             options
           );
-          strapi.log.info("DEBUG - calling providerFunctions uploadStream");
           return providerFunctions.uploadStream(file);
         } catch (err) {
-          strapi.log.info("DEBUG - error occurred");
           return null;
         }
       },
@@ -163,16 +142,8 @@ module.exports = {
         }
       },
       isPrivate() {
-        // try {
-        //   const { providerFunctions, providerOptions } = getProviderData(
-        //     file,
-        //     options
-        //   );
-        //   strapi.log.info("DEBUG - calling providerFunctions isPrivate");
-        //   return providerFunctions.isPrivate();
-        // } catch (err) {
-        //   return null;
-        // }
+        // HACK: all providers are set to private, which means all will attempt to
+        // produce a signed url
         return true;
       },
       getSignedUrl(file) {
@@ -181,7 +152,6 @@ module.exports = {
             file,
             options
           );
-          strapi.log.info("DEBUG - calling providerFunctions getSignedUrl");
           return providerFunctions.getSignedUrl(file);
         } catch (err) {
           return null;
