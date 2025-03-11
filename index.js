@@ -103,6 +103,12 @@ const getProviderData = (file, options) => {
     }),
     delete: wrapFunctionForErrors(file => {
       return providerInstance.delete(file)
+    }),
+    isPrivate: wrapFunctionForErrors(async () => {
+      return providerInstance.isPrivate();
+    }),
+    getSignedUrl: wrapFunctionForErrors(async () => {
+      return providerInstance.getSignedUrl();
     })
   })
 
@@ -145,6 +151,30 @@ module.exports = {
             options
           )
           return providerFunctions.delete(file)
+        } catch (err) {
+          return null
+        }
+      },
+      isPrivate (file) {
+        try {
+          const { providerFunctions, providerOptions } = getProviderData(
+            file,
+            options
+          )
+          strapi.log.info("DEBUG - calling providerFunctions isPrivate");
+          return providerFunctions.isPrivate();
+        } catch (err) {
+          return null
+        }
+      },
+      getSignedUrl (file) {
+        try {
+          const { providerFunctions, providerOptions } = getProviderData(
+            file,
+            options
+          )
+          strapi.log.info("DEBUG - calling providerFunctions getSignedUrl");
+          return providerFunctions.getSignedUrl();
         } catch (err) {
           return null
         }
