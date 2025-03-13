@@ -97,7 +97,7 @@ const getProviderData = (file, options) => {
       if (providerInstance.isPrivate && providerInstance.isPrivate()) {
         return providerInstance.getSignedUrl(file);
       } else {
-        return file.url;
+        return { url: file.url };
       }
     }),
   });
